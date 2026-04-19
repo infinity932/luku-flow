@@ -10,7 +10,22 @@ app = FastAPI()
 # --- USER DATABASE (Temporary) ---
 # In a real app, you'd use a database like SQLite or PostgreSQL
 users_db = {} 
+from fastapi.responses import FileResponse
 
+# For the Login page
+@app.get("/login")
+async def get_login():
+    return FileResponse("login.html") # Add 'static/' if they are in that folder
+
+# For the Payment page
+@app.get("/payment")
+async def get_payment():
+    return FileResponse("payment.html")
+
+# For the History page
+@app.get("/history")
+async def get_history():
+    return FileResponse("history.html")
 class UserRegister(BaseModel):
     username: str
     password: str
@@ -23,7 +38,18 @@ class NewMeter(BaseModel):
 history_db = [
     {"date": "2026-04-10", "nickname": "Home", "amount": "5,000", "token": "4421-9908-1123-4456-0091"},
 ]
+from fastapi.responses import FileResponse
 
+# THIS IS THE "FRONT DOOR"
+# It now points directly to your login page
+@app.get("/")
+async def get_login():
+    return FileResponse("login.html")
+
+# YOUR DASHBOARD IS NOW HERE
+@app.get("/dashboard")
+async def get_dashboard():
+    return FileResponse("index.html")
 @app.get("/history")
 async def get_history():
     return FileResponse("history.html")
