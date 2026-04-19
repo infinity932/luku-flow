@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LUKU Connect - Malipo</title>
+    <style>
+        body {
+            background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), 
+                        url('https://images.unsplash.com/photo-1473341304170-971dccb5ac1e');
+            background-size: cover;
+            font-family: 'Segoe UI', sans-serif;
+            color: white;
+            display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0;
+        }
+        .pay-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            padding: 30px; border-radius: 20px; width: 380px; text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .method-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
+        .method-item {
+            background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;
+            cursor: pointer; border: 2px solid transparent; transition: 0.3s;
+        }
+        .method-item:hover { border-color: #ffcc00; background: rgba(255,255,255,0.3); }
+        .method-item img { height: 40px; display: block; margin: 0 auto 5px; }
+        input { width: 100%; padding: 12px; margin-top: 10px; border-radius: 5px; border: none; box-sizing: border-box; }
+        .pay-btn { width: 100%; padding: 15px; background: #00cc66; color: white; border: none; border-radius: 10px; font-weight: bold; margin-top: 20px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="pay-card">
+    <h2>Kamilisha Malipo</h2>
+    <p>Meter: <span id="displayMeter">---</span></p>
+    <p>Kiasi: <strong>TZS <span id="displayAmount">0</span></strong></p>
+
+    <div class="method-grid">
+    <div class="method-item" onclick="selectMethod('mpesa')">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/M-Pesa_Logo.svg/512px-M-Pesa_Logo.svg.png" alt="M-Pesa">
+        <span>M-Pesa</span>
+    </div>
+    <div class="method-item" onclick="selectMethod('tigo')">
+        <img src="https://logos-world.net/wp-content/uploads/2021/02/Tigo-Logo.png" alt="Tigo">
+        <span>TigoPesa</span>
+    </div>
+    <div class="method-item" onclick="selectMethod('airtel')">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Airtel_logo.svg/512px-Airtel_logo.svg.png" alt="Airtel">
+        <span>Airtel</span>
+    </div>
+    <div class="method-item" onclick="selectMethod('halo')">
+        <img src="https://halotel.co.tz/static/media/halopesa_logo.3e59714e.png" alt="Halopesa">
+        <span>HaloPesa</span>
+    </div>
+    <div class="method-item" onclick="selectMethod('card')" style="grid-column: span 2;">
+        <div style="font-size: 20px;">💳 Visa / Mastercard</div>
+    </div>
+</div>
+
+    <input type="number" id="phoneNum" placeholder="Namba ya Simu (e.g. 07XXXXXXXX)">
+    <button class="pay-btn" onclick="startPayment()">LIPA SASA</button>
+</div>
+
+<script>
+    let selectedMethod = '';
+    
+    // Replace lines 68-72 in your photo with this:
+function selectMethod(method) {
+    selectedMethod = method;
+    console.log("Njia iliyochaguliwa: ", method);
+
+    // 1. Remove the yellow border from ALL methods first
+    document.querySelectorAll('.method-item').forEach(item => {
+        item.style.borderColor = 'transparent';
+        item.style.background = 'rgba(255,255,255,0.2)';
+    });
+
+    // 2. Add the highlight to the one the user just clicked
+    // This finds the specific box for M-Pesa, Tigo, or HaloPesa
+    const activeBox = event.currentTarget;
+    activeBox.style.borderColor = '#ffcc00'; // Electricity Yellow
+    activeBox.style.background = 'rgba(255,255,255,0.4)';
+}
+
+    async function startPayment() {
+        const phone = document.getElementById('phoneNum').value;
+        if(!selectedMethod || phone.length < 10) {
+            alert("Tafadhali chagua njia ya malipo na weka namba sahihi!");
+            return;
+        }
+        
+        alert("Ombi la malipo limetumwa! Tafadhali angalia simu yako kuweka PIN.");
+        // Here you would fetch your AzamPay or Stripe route in flow.py
+    }
+</script>
+
+</body>
+</html>

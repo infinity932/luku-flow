@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LUKU Connect - Login</title>
+    <style>
+        body {
+            /* Background image with power lines and a dark overlay */
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('https://images.unsplash.com/photo-1473341304170-971dccb5ac1e'); 
+            background-size: cover;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .auth-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px); /* Glass effect */
+            padding: 40px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 350px;
+            text-align: center;
+            color: white;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #ffcc00; /* Electricity Yellow */
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover { background: #e6b800; }
+        
+        .toggle-link {
+            font-size: 0.8em;
+            margin-top: 15px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-container" id="login-box">
+    <h2>LUKU Connect</h2>
+    <p>Ingia Kwenye Akaunti Yako</p>
+    <input type="text" id="user" placeholder="Username / Namba ya Simu">
+    <input type="password" id="pass" placeholder="Password">
+    <button onclick="handleLogin()">LOGIN</button>
+    <p class="toggle-link" onclick="toggleAuth()">Huna akaunti? Jisajili hapa</p>
+</div>
+
+<script>
+    function toggleAuth() {
+        // Simple logic to switch between Login and Signup text
+        const title = document.querySelector('h2');
+        title.innerText = title.innerText === "LUKU Connect" ? "Jisajili" : "LUKU Connect";
+    }
+
+    async function handleLogin() {
+        // Logic to connect to your flow.py /login route
+        alert("Connecting to local server...");
+    }
+</script>
+
+</body>
+</html>

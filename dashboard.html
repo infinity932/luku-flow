@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LUKU Connect - Login</title>
+    <style>
+        body {
+            /* Background image with power lines and a dark overlay */
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('https://images.unsplash.com/photo-1473341304170-971dccb5ac1e'); 
+            background-size: cover;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .auth-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px); /* Glass effect */
+            padding: 40px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 350px;
+            text-align: center;
+            color: white;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #ffcc00; /* Electricity Yellow */
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover { background: #e6b800; }
+        
+        .toggle-link {
+            font-size: 0.8em;
+            margin-top: 15px;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-container" id="login-box">
+    <h2>LUKU Connect</h2>
+    <p>Ingia Kwenye Akaunti Yako</p>
+    <input type="text" id="user" placeholder="Username / Namba ya Simu">
+    <input type="password" id="pass" placeholder="Password">
+    <button onclick="handleLogin()">LOGIN</button>
+    <p class="toggle-link" onclick="toggleAuth()">Huna akaunti? Jisajili hapa</p>
+<div class="card" id="addMeterSection">
+    <h3>Sajili Mita Mpya (Add New Meter)</h3>
+    <p style="font-size: 0.85em; opacity: 0.8;">Weka jina la mita (mf. Nyumba ya Kupanga) na namba yake.</p>
+    
+    <input type="text" id="meterNickname" placeholder="Jina (e.g. Backyard Room)">
+    <input type="number" id="newMeterNumber" placeholder="Namba ya Mita (11 Digits)">
+    
+    <button class="btn-pay" style="background: #3399ff;" onclick="submitNewMeter()">Save Meter</button>
+</div>
+</div>
+<div class="card" id="feedbackSection">
+    <h3 id="help-title">Msaada na Maoni (Help & Feedback)</h3>
+    <p style="font-size: 0.85em; opacity: 0.8;">Unapata tatizo? Tuandikie hapa:</p>
+    
+    <select id="issueType" style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px;">
+        <option value="token_not_received">Tokeni haijafika (Token not received)</option>
+        <option value="payment_failed">Malipo yamegoma (Payment failed)</option>
+        <option value="meter_error">Mita ina tatizo (Meter error)</option>
+        <option value="other">Mengineyo (Other)</option>
+    </select>
+    
+    <textarea id="feedbackText" placeholder="Elezea tatizo lako hapa..." style="width: 100%; height: 80px; padding: 10px; border-radius: 5px; border: none; box-sizing: border-box;"></textarea>
+    
+    <button class="btn-pay" style="background: #ff4444;" onclick="submitFeedback()">Tuma Maoni (Send)</button>
+</div>
+<select>
+    <div class="card">
+    <h3>Chagua Mita (Select Meter)</h3>
+    <select id="meterSelector" onchange="updateSelectedMeter()" style="width: 100%; padding: 10px; border-radius: 5px;">
+        <option value="2421000001">Nyumbani (Home)</option>
+        <option value="2421000002">Fremu ya Biashara (Shop)</option>
+        <option value="2421000003">Mpangaji - Unit 1</option>
+    </select>
+</div>
+<div id="mySidebar" class="sidebar">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">× Close</a>
+    
+    <div style="padding: 15px 30px; border-bottom: 1px solid #333;">
+        <span style="color: #818181; font-size: 12px; letter-spacing: 1px;">LUGHA / LANGUAGE</span>
+        <div style="margin-top: 10px; display: flex; gap: 10px;">
+            <button onclick="changeLanguage('sw')" style="background:none; border:1px solid #ffcc00; color:white; cursor:pointer; padding:5px; flex:1;">SW</button>
+            <button onclick="changeLanguage('en')" style="background:none; border:1px solid #ffcc00; color:white; cursor:pointer; padding:5px; flex:1;">EN</button>
+        </div>
+    </div>
+
+    <a href="/history">🕒 Historia (History)</a>
+    <a href="#" onclick="openHelp()">🛠 Msaada (Help)</a>
+    
+    <a href="/login" style="color: #ff4444; margin-top: 50px; border-top: 1px solid #333;">🚪 Logout</a>
+</div>
+<script>
+    let currentMeter = "2421000001"; // Default
+
+    function updateSelectedMeter() {
+        const selector = document.getElementById('meterSelector');
+        currentMeter = selector.value;
+        console.log("Sasa unahudumia mita namba: " + currentMeter);
+        // This 'currentMeter' will be sent to the backend when paying
+    }
+
+    async function showPayment() {
+        const amount = document.getElementById('amountInput').value;
+        
+        if(!amount || amount < 1000) {
+            alert("Tafadhali weka kiasi kuanzia TZS 1,000");
+            return;
+        }
+
+        alert(`Unanunua luku ya TZS ${amount} kwenda mita: ${currentMeter}`);
+        
+        // Send to FastAPI
+        const response = await fetch('/pay', {
+            method: 'POST',
+            body: JSON.stringify({
+                meter_id: currentMeter,
+                amount: amount
+            })
+        });
+    }
+</script>
+</select>
+<script>
+    function toggleAuth() {
+        // Simple logic to switch between Login and Signup text
+        const title = document.querySelector('h2');
+        title.innerText = title.innerText === "LUKU Connect" ? "Jisajili" : "LUKU Connect";
+    }
+
+    async function handleLogin() {
+        // Logic to connect to your flow.py /login route
+        alert("Connecting to local server...");
+    }
+    async function submitNewMeter() {
+    const nickname = document.getElementById('meterNickname').value;
+    const meterNum = document.getElementById('newMeterNumber').value;
+
+    if (meterNum.length !== 11) {
+        alert("Namba ya mita lazima iwe na tarakimu 11!");
+        return;
+    }
+
+    // Send the data to your FastAPI backend
+    const response = await fetch('/add_meter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            nickname: nickname,
+            meter_number: meterNum
+        })
+    });
+
+    const result = await response.json();
+    if (result.status === "success") {
+        alert("Mita imesajiliwa! Refresh ukurasa kuiona.");
+        location.reload(); // Refresh to update the dropdown list
+    } else {
+        alert("Kuna tatizo: " + result.message);
+    }
+}
+const translations = {
+    'en': {
+        'buy_tokens': 'Buy Tokens',
+        'select_meter': 'Select Meter',
+        'est_units': 'Estimated Units:',
+        'history': 'History',
+        'help': 'Help Center',
+        'logout': 'Log Out'
+    },
+    'sw': {
+        'buy_tokens': 'Nunua LUKU',
+        'select_meter': 'Chagua Mita',
+        'est_units': 'Makadirio ya Unit:',
+        'history': 'Historia',
+        'help': 'Msaada',
+        'logout': 'Ondoka'
+    }
+};
+
+function changeLanguage(lang) {
+    // Save the preference so the app remembers it next time
+    localStorage.setItem('preferred_lang', lang);
+    
+    // Update the text on the page
+    document.querySelector('#buy-tokens-title').innerText = translations[lang]['buy_tokens'];
+    document.querySelector('#meter-title').innerText = translations[lang]['select_meter'];
+    // ... add more selectors here ...
+    
+    console.log("Lugha imebadilishwa kwenda: " + lang);
+}
+async function submitFeedback() {
+    const type = document.getElementById('issueType').value;
+    const message = document.getElementById('feedbackText').value;
+
+    if (!message) {
+        alert("Tafadhali andika maelezo ya tatizo lako.");
+        return;
+    }
+
+    const response = await fetch('/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            issue_type: type,
+            message: message,
+            timestamp: new Date().toLocaleString()
+        })
+    });
+
+    const result = await response.json();
+    if (result.status === "success") {
+        alert("Asante! Tumepokea ujumbe wako na tutaufanyia kazi.");
+        document.getElementById('feedbackText').value = ""; // Clear the box
+    }
+}
+</script>
+
+</body>
+</html>

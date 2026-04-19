@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00b894">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUKU Token Pay</title>
+    <style>
+    :root {
+    --mpesa-red: #e60000;
+    --mpesa-bg: #f2f2f2; /* Slightly darker gray for better card contrast */
+    --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: var(--mpesa-bg);
+    font-family: var(--font-main);
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Header with that specific Vodacom gradient/look */
+.top-header {
+    background: var(--mpesa-red);
+    height: 140px;
+    padding: 30px 20px;
+    color: white;
+    border-radius: 0 0 25px 25px;
+    box-sizing: border-box;
+}
+
+/* Float the card higher */
+.account-card {
+    background: white;
+    width: 92%;
+    margin: -50px auto 25px;
+    padding: 25px 15px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    text-align: center;
+}
+
+.account-card h3 { color: #888; font-size: 13px; font-weight: 600; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
+.account-card h1 { font-size: 32px; margin: 0; color: #1a1a1a; font-weight: 700; }
+
+/* Input styling to look like the M-Pesa 'Fields' */
+.input-group {
+    background: white;
+    width: 92%;
+    margin: 0 auto 15px;
+    padding: 12px 20px;
+    border-radius: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    box-sizing: border-box;
+}
+
+.input-group label {
+    font-size: 11px;
+    color: var(--mpesa-red);
+    font-weight: 700;
+    display: block;
+    margin-bottom: 2px;
+}
+
+input {
+    width: 100%;
+    border: none;
+    font-size: 18px;
+    font-weight: 500;
+    outline: none;
+    background: transparent;
+    padding: 5px 0;
+}
+
+/* The Big Red Button */
+.pay-btn {
+    background: var(--mpesa-red);
+    color: white;
+    width: 92%;
+    display: block;
+    margin: 25px auto;
+    padding: 18px;
+    border: none;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 700;
+    box-shadow: 0 8px 20px rgba(230, 0, 0, 0.25);
+}
+    </style>
+</head>
+<body>
+    <div class="top-header">
+       <div id="text-greeting" style="font-weight: 500; font-size: 18px;">Habari, Muslimu 👋</div>
+<div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+    <div style="font-size: 24px; cursor: pointer;" onclick="alert('Settings Menu')">☰</div>
+    <div id="text-greeting">Habari, Muslimu 👋</div>
+    <div></div> </div>
+<div onclick="toggleLanguage()" style="background: rgba(255,255,255,0.2); padding: 8px; border-radius: 15px; cursor: pointer;">
+    <span id="lang-label" style="font-weight: bold; font-size: 12px;">EN</span>
+</div>
+    </div>
+
+    <div class="account-card">
+       <h3 id="balance-title">LUKU Balance</h3>
+        <h1 id="unit-balance">14.20 <span style="font-size: 18px; font-weight: 400;">kWh</span></h1>
+        <div style="margin-top: 10px; font-size: 13px; color: #28a745; font-weight: 500;">
+            ● Meter Active: 1420...
+        </div>
+    </div>
+
+    <div class="input-group">
+        <label id="meter-label">METER NUMBER</label>>
+        <input type="number" id="meter" placeholder="1420 5678 112">
+    </div>
+
+    <div class="input-group">
+       <label id="amount-label">AMOUNT (TSH)</label>
+       <input type="number" id="amount" placeholder="Min 1,000" oninput="calculateUnits()">
+    </div>
+    <div id="units-box" style="display:none; margin-top:10px; padding:10px; background:#e8f5e9; border:1px solid #28a745; border-radius:8px; text-align:center;">
+    <span style="font-size:12px; color:#666;">Utapata Takribani:</span>
+    <div style="font-weight:bold; color:#28a745; font-size:18px;"><span id="predicted-units">0.00</span> kWh</div>
+    </div>
+   <button class="pay-btn" onclick="pay()"><span id="pay-btn-text">Nunua Kifurushi</span></button>
+
+    <div style="position:fixed; bottom:0; width:100%; height:70px; background:white; display:flex; justify-content:space-around; align-items:center; border-top: 1px solid #eee;">
+        <div style="color:var(--mpesa-red); text-align:center; font-size:11px;">🏠<br>Home</div>
+        <div style="color:#888; text-align:center; font-size:11px;">📊<br>Usage</div>
+        <div style="color:#888; text-align:center; font-size:11px;">👤<br>Account</div>
+    </div>
+<script>
+    // 1. The Dictionary
+    const translations = {
+        en: {
+            greeting: "Hello, name 👋",
+            balance_label: "LUKU BALANCE",
+            meter_label: "METER NUMBER",
+            amount_label: "AMOUNT (TSH)",
+            pay_btn: "Buy Units",
+            active_meter: "● Meter Active: ",
+            home: "Home",
+            usage: "Usage",
+            account: "Account"
+        },
+        sw: {
+            greeting: "Habari, Muslimu 👋",
+            balance_label: "SALIO LA LUKU",
+            meter_label: "NAMBA YA MITA",
+            amount_label: "KIASI (TSH)",
+            pay_btn: "Nunua Kifurushi",
+            active_meter: "● Mita Ipo Hewani: ",
+            home: "Nyumbani",
+            usage: "Matumizi",
+            account: "Akaunti"
+        }
+    };
+
+    let currentLang = 'sw';
+
+    // 2. The Switcher Function
+    function toggleLanguage() {
+        currentLang = (currentLang === 'sw') ? 'en' : 'sw';
+        
+        // Update the toggle button text
+        document.getElementById('lang-label').innerText = (currentLang === 'sw') ? 'EN' : 'SW';
+
+        // Update all text elements
+        document.getElementById('text-greeting').innerText = translations[currentLang].greeting;
+        document.getElementById('balance-title').innerText = translations[currentLang].balance_label;
+        document.getElementById('meter-label').innerText = translations[currentLang].meter_label;
+        document.getElementById('amount-label').innerText = translations[currentLang].amount_label;
+        document.getElementById('pay-btn-text').innerText = translations[currentLang].pay_btn;
+        
+        // Update Bottom Nav
+        const navItems = document.querySelectorAll('.nav-text');
+        navItems[0].innerText = translations[currentLang].home;
+        navItems[1].innerText = translations[currentLang].usage;
+        navItems[2].innerText = translations[currentLang].account;
+    }
+async function pay() {
+    // Get the values the user typed in
+    const meterId = document.getElementById('meter').value;
+    const amount = document.getElementById('amount').value;
+
+    // Basic check to make sure fields aren't empty
+    if (!meterId || !amount) {
+        alert("Tafadhali jaza mita na kiasi!");
+        return;
+    }
+
+    try {
+        // Send the data to your Python backend (flow.py)
+        const response = await fetch('/pay', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ meter_id: meterId, amount: amount })
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === "success") {
+            alert("Token imetumwa: " + data.token);
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Imeshindwa kutuma! Hakikisha Python (flow.py) inakimbia.");
+    }
+}
+function calculateUnits() {
+    const amount = document.getElementById('amount').value;
+    const unitsBox = document.getElementById('units-box');
+    const unitsDisplay = document.getElementById('predicted-units');
+    
+    if (amount >= 1000) {
+        unitsBox.style.display = 'block';
+        // Logic: Tanzanian residential rate is ~350 TSH per unit
+        const kwh = (amount / 350).toFixed(2); 
+        unitsDisplay.innerText = kwh;
+    } else {
+        unitsBox.style.display = 'none';
+    }
+}
+</script>
+</body>
+</html>

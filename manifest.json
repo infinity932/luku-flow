@@ -1,0 +1,16 @@
+{
+  "short_name": "LUKU Pay",
+  "name": "LUKU Token Payment System",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/2972/2972185.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#f4f7f6",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#00b894"
+}
