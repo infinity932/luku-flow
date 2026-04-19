@@ -12,10 +12,13 @@ app = FastAPI()
 users_db = {} 
 from fastapi.responses import FileResponse
 
-# For the Login page
-@app.get("/login")
+@app.get("/")
 async def get_login():
-    return FileResponse("login.html") # Add 'static/' if they are in that folder
+    return FileResponse("login.html")
+
+@app.get("/dashboard")
+async def get_dashboard():
+    return FileResponse("index.html")
 
 # For the Payment page
 @app.get("/payment")
