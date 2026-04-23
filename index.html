@@ -8,26 +8,45 @@
     <title>LUKU Token Pay</title>
     <style>
     :root {
-    --mpesa-red: #e60000;
-    --mpesa-bg: #f2f2f2; /* Slightly darker gray for better card contrast */
-    --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --text-main: #ffffff;
+    --accent-color: #00d2ff; /* A modern blue accent */
+    --font-main: 'Segoe UI', Roboto, Helvetica, sans-serif;
 }
 
 body {
-    background-color: var(--mpesa-bg);
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                url('https://images.unsplash.com/photo-1473341304170-971dccb5ac1e');
+    background-size: cover;
+    background-attachment: fixed;
     font-family: var(--font-main);
+    color: var(--text-main);
     margin: 0;
-    -webkit-font-smoothing: antialiased;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
 }
 
 /* Header with that specific Vodacom gradient/look */
-.top-header {
-    background: var(--mpesa-red);
-    height: 140px;
-    padding: 30px 20px;
-    color: white;
-    border-radius: 0 0 25px 25px;
-    box-sizing: border-box;
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 25px;
+    width: 90%;
+    max-width: 400px;
+    margin-top: 20px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.balance-amount {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--accent-color);
 }
 
 /* Float the card higher */
@@ -74,56 +93,51 @@ input {
 }
 
 /* The Big Red Button */
-.pay-btn {
-    background: var(--mpesa-red);
+.glass-button {
+    background: #e60000; /* Keeping a touch of that M-Pesa red for the action */
     color: white;
-    width: 92%;
-    display: block;
-    margin: 25px auto;
-    padding: 18px;
     border: none;
-    border-radius: 50px;
-    font-size: 18px;
-    font-weight: 700;
-    box-shadow: 0 8px 20px rgba(230, 0, 0, 0.25);
+    padding: 15px;
+    width: 100%;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: 0.3s;
+}
+
+.glass-button:hover {
+    background: #ff3333;
+    transform: scale(1.02);
 }
     </style>
 </head>
 <body>
-    <div class="top-header">
-       <div id="text-greeting" style="font-weight: 500; font-size: 18px;">Habari, Muslimu 👋</div>
-<div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-    <div style="font-size: 24px; cursor: pointer;" onclick="alert('Settings Menu')">☰</div>
-    <div id="text-greeting">Habari, Muslimu 👋</div>
-    <div></div> </div>
-<div onclick="toggleLanguage()" style="background: rgba(255,255,255,0.2); padding: 8px; border-radius: 15px; cursor: pointer;">
-    <span id="lang-label" style="font-weight: bold; font-size: 12px;">EN</span>
+    <div class="header-greeting">
+    Habari, Muslimu 👋
 </div>
+
+<div class="glass-card">
+    <div class="balance-section">
+        <p>LUKU BALANCE</p>
+        <div class="balance-amount">14.20 <span style="font-size: 1.2rem;">kWh</span></div>
+        <p class="meter-status">● Meter Active: 1420 5678 112</p>
     </div>
 
-    <div class="account-card">
-       <h3 id="balance-title">LUKU Balance</h3>
-        <h1 id="unit-balance">14.20 <span style="font-size: 18px; font-weight: 400;">kWh</span></h1>
-        <div style="margin-top: 10px; font-size: 13px; color: #28a745; font-weight: 500;">
-            ● Meter Active: 1420...
-        </div>
+    <hr style="border: 0.5px solid var(--glass-border); margin: 20px 0;">
+
+    <div class="input-group">
+        <label>METER NUMBER</label>
+        <input type="number" placeholder="1420 5678 112">
     </div>
 
     <div class="input-group">
-        <label id="meter-label">METER NUMBER</label>>
-        <input type="number" id="meter" placeholder="1420 5678 112">
+        <label>AMOUNT (TSH)</label>
+        <input type="number" placeholder="Min 1,000" oninput="calculateUnits()">
     </div>
 
-    <div class="input-group">
-       <label id="amount-label">AMOUNT (TSH)</label>
-       <input type="number" id="amount" placeholder="Min 1,000" oninput="calculateUnits()">
-    </div>
-    <div id="units-box" style="display:none; margin-top:10px; padding:10px; background:#e8f5e9; border:1px solid #28a745; border-radius:8px; text-align:center;">
-    <span style="font-size:12px; color:#666;">Utapata Takribani:</span>
-    <div style="font-weight:bold; color:#28a745; font-size:18px;"><span id="predicted-units">0.00</span> kWh</div>
-    </div>
-   <button class="pay-btn" onclick="pay()"><span id="pay-btn-text">Nunua Kifurushi</span></button>
-
+    <button class="glass-button" onclick="pay()">Nunua Kifurushi</button>
+</div>
     <div style="position:fixed; bottom:0; width:100%; height:70px; background:white; display:flex; justify-content:space-around; align-items:center; border-top: 1px solid #eee;">
         <div style="color:var(--mpesa-red); text-align:center; font-size:11px;">🏠<br>Home</div>
         <div style="color:#888; text-align:center; font-size:11px;">📊<br>Usage</div>
