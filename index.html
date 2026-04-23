@@ -7,7 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LUKU Token Pay</title>
     <style>
-    body {
+/* 1. Global Reset & Consistent Background (Same on both) */
+body {
     margin: 0;
     padding: 0;
     background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.7)), 
@@ -15,32 +16,36 @@
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
-    height: 100vh;
     font-family: 'Segoe UI', Roboto, sans-serif;
     color: white;
+    height: 100vh;
     display: flex;
-    flex-direction: column;
+    justify-content: center; /* This centers everything on both devices */
     align-items: center;
 }
 
-/* Invisible containers for the borderless look */
-.account-card, .glass-card {
-    background: none !important; 
-    border: none !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
+/* 2. PC Styling (Default) */
+/* The "Invisible Box" keeps your PC version looking exactly like your screenshot */
+.glass-card, .auth-container {
+    background: none; 
+    border: none;
     width: 90%;
     max-width: 400px;
     padding: 20px;
     text-align: center;
+    /* On PC, keep items compact (current look) */
+    display: flex;
+    flex-direction: column;
+    gap: 15px; 
 }
 
-/* Ensure text is readable against the background */
-h1, h3, p, label, .header-greeting {
+/* 3. The "Text Shadow Safety Net" (Same on both) */
+h1, h2, h3, p, label, .toggle-link {
     text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.9);
     color: white !important;
 }
 
+/* Balance style from your screenshot */
 .unit-balance {
     font-size: 3rem;
     color: #00d2ff; 
@@ -48,46 +53,93 @@ h1, h3, p, label, .header-greeting {
     text-shadow: 0px 0px 15px rgba(0, 210, 255, 0.5);
 }
 
-/* Floating inputs */
+/* Unified Floating Input Style (Same on both) */
 input {
     width: 100%;
-    background: rgba(255, 255, 255, 0.15) !important;
-    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.4);
     backdrop-filter: blur(8px);
     border-radius: 10px;
-    padding: 12px;
-    color: white !important;
-    margin-top: 10px;
+    padding: 14px; /* Increased padding slightly for mobile thumbs */
+    color: white;
+    box-sizing: border-box; /* Crucial for phone width */
 }
 
 input::placeholder {
     color: rgba(255, 255, 255, 0.7);
 }
 
-/* The action button */
+/* Nunua Button Style from your screenshot */
 .glass-button, .pay-btn {
     background: #e60000;
     color: white;
     border: none;
-    padding: 15px;
+    padding: 18px; /* Bigger button for mobile */
     width: 100%;
     border-radius: 12px;
     font-weight: bold;
     cursor: pointer;
-    margin-top: 30px;
     transition: 0.3s;
-    box-shadow: 0px 4px 10px rgba(230, 0, 0, 0.4);
+    box-shadow: 0px 4px 15px rgba(230, 0, 0, 0.4);
 }
 
-.glass-button:hover, .pay-btn:hover {
-    background: #ff3333;
-    transform: scale(1.02);
+/* ----------------------------------------------------------- */
+/* THE MOBILE MAGIC (Media Query)                              */
+/* If the screen is narrower than 768px (most phones), use this: */
+/* ----------------------------------------------------------- */
+@media (max-width: 768px) {
+    
+    body {
+        justify-content: flex-start; /* Move content to the very top of the screen */
+        align-items: center;
+        padding-top: 30px; /* Give a little breathing room at the very top */
+    }
+
+    .glass-card, .auth-container {
+        /* Instead of being centred in a small area, it now stretches
+           from the top greeting all the way down toward the button */
+        height: auto;
+        min-height: calc(100vh - 100px); /* Fill most of the vertical space */
+        justify-content: flex-start;
+        display: flex;
+        flex-direction: column;
+        
+        /* Increase distance between sections (Greeting -> Balance -> Inputs) */
+        gap: 35px; 
+    }
+    
+    /* Place the Greeting at the very top */
+    .header-greeting {
+        margin-top: 0;
+        font-size: 1.1rem;
+    }
+    
+    /* Make the Balance area central and dominant */
+    .unit-balance {
+        font-size: 4rem; /* Larger numbers on tall screens */
+        margin-top: 20px;
+    }
+    
+    /* Spacing between the label and input on phone */
+    .input-group label {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 0.85rem;
+    }
+    
+    /* The core request: Push the button DOWN */
+    .glass-button, .pay-btn {
+        margin-top: auto; /* This automatically takes up available vertical space
+                             pushing the button all the way to the bottom
+                             (but above the navigation bar) */
+        margin-bottom: 50px; /* Keeps it clear of the bottom navigation bar */
+    }
 }
-    </style>
+</style>
 </head>
 <body>
     <div class="header-greeting" style="margin-top: 40px; font-size: 1.2rem;">
-    Habari, Muslimu 👋
+    <span id="user-greeting">Habari, Mteja 👋</span>
 </div>
 
 <div class="glass-card">
@@ -214,6 +266,25 @@ function calculateUnits() {
         unitsBox.style.display = 'none';
     }
 }
+// This function runs automatically when the Dashboard opens
+window.onload = async function() {
+    try {
+        const response = await fetch('/api/user_data');
+        
+        if (!response.ok) {
+            throw new Error('Could not fetch user data');
+        }
+
+        const data = await response.ok ? await response.json() : null;
+
+        if (data && data.username) {
+            // Find the greeting span and update "Muslimu" to the real name
+            document.getElementById('user-greeting').innerText = `Habari, ${data.username} 👋`;
+        }
+    } catch (error) {
+        console.error('Error loading dashboard:', error);
+    }
+};
 </script>
 </body>
 </html>

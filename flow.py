@@ -16,9 +16,20 @@ from fastapi.responses import FileResponse
 async def get_login():
     return FileResponse("login.html")
 
+# Create a temporary storage for the currently logged-in user
+# (Normally, we would use proper "sessions" or "cookies" here)
+current_user = {"username": "Mteja"}
+
 @app.get("/dashboard")
 async def get_dashboard():
+    # Make sure we only show the dashboard if someone has logged in
+    # (Simplified login check for this demo)
     return FileResponse("index.html")
+
+# NEW ENDPOINT: Let the browser ask "who is logged in?"
+@app.get("/api/user_data")
+async def provide_user_data():
+    return {"username": current_user["username"]}
 
 # For the Payment page
 @app.get("/payment")
@@ -63,9 +74,10 @@ async def get_history_data():
     return history_db
 @app.post("/register")
 async def register(user: UserRegister):
-    if user.username in users_db:
-        return {"status": "error", "message": "User already exists!"}
+    # (Your existing registration logic...)
     users_db[user.username] = {"password": user.password, "meters": user.meter_ids}
+    # When they register (and effectively log in), we set the name
+    current_user["username"] = user.username 
     return {"status": "success", "message": "Account created!"}
 
 @app.post("/login")
