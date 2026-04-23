@@ -4,28 +4,36 @@
     <title>LUKU Connect - Login</title>
     <style>
         body {
-            /* Background image with power lines and a dark overlay */
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
-                        url('https://images.unsplash.com/photo-1473341304170-971dccb5ac1e'); 
-            background-size: cover;
-            font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.6)), 
+                url('https://images.unsplash.com/photo-1473341304170-971dccb5ac1e');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    height: 100vh;
+    overflow: hidden; /* Prevents accidental scrolling on the login screen */
+}
 
         .auth-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px); /* Glass effect */
-            padding: 40px;
-            border-radius: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            width: 350px;
-            text-align: center;
-            color: white;
-        }
+    /* Remove the box look */
+    background: none; 
+    backdrop-filter: none;
+    border: none;
+    box-shadow: none;
+
+    /* Make it full screen */
+    width: 100%;
+    height: 100vh;
+    
+    /* Center everything perfectly */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
 
         input {
             width: 100%;
@@ -67,7 +75,22 @@
     <button onclick="handleLogin()">LOGIN</button>
     <p class="toggle-link" onclick="toggleAuth()">Huna akaunti? Jisajili hapa</p>
 </div>
+/* Add this right before the </style> tag at line 58 */
+h2, p, .toggle-link, label {
+    text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.9);
+    color: white !important;
+}
 
+input {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    backdrop-filter: blur(8px);
+    color: white !important;
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
 <script>
     function toggleAuth() {
         // Simple logic to switch between Login and Signup text
