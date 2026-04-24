@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <title>LUKU Connect - Login</title>
     <style>
         body {
@@ -78,10 +79,17 @@
 <div class="auth-container" id="login-box">
     <h2>LUKU Connect</h2>
     <p>Ingia Kwenye Akaunti Yako</p>
-    <input type="text" id="user" placeholder="Username / Namba ya Simu">
-    <input type="password" id="pass" placeholder="Password">
-    <button onclick="handleLogin()">LOGIN</button>
-    <p class="toggle-link" onclick="toggleAuth()">Huna akaunti? Jisajili hapa</p>
+    
+    <form id="loginForm">
+        <input type="text" id="user" placeholder="Namba ya Simu (Mf. 07...)" required>
+        <input type="password" id="pass" placeholder="Password" required>
+        
+        <button type="submit" class="glass-button">LOGIN</button>
+    </form>
+
+    <p class="toggle-link" onclick="window.location.href='register.html'">
+        Huna akaunti? Jisajili hapa
+    </p>
 </div>
 /* Add this right before the </style> tag at line 58 */
 h2, p, .toggle-link, label {
@@ -100,17 +108,42 @@ input::placeholder {
     color: rgba(255, 255, 255, 0.7);
 }
 <script>
-    function toggleAuth() {
-        // Simple logic to switch between Login and Signup text
-        const title = document.querySelector('h2');
-        title.innerText = title.innerText === "LUKU Connect" ? "Jisajili" : "LUKU Connect";
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault(); 
+    
+    const username = document.getElementById('user').value;
+    const password = document.getElementById('pass').value;
+
+    // 1. Strict Phone Validation
+    const phoneRegex = /^0[67]\d{8}$/;
+    if (!phoneRegex.test(username)) {
+        alert("Weka namba sahihi ya simu (Ianze na 06 au 07 na iwe na tarakimu 10)");
+        return;
     }
 
-    async function handleLogin() {
-        // Logic to connect to your flow.py /login route
-// This tells the browser to go to your new dashboard address
-    window.location.href = "/dashboard";
+    // 2. Talk to flow.py
+    try {
+        const response = await fetch('/login', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ username: username, password: password })
+        });
+
+        const result = await response.json();
+
+        if (result.status === "success") {
+            window.location.href = "/dashboard"; 
+        } else if (result.status === "not_found") {
+            alert("Akaunti haijapatikana! Tafadhali jisajili kwanza.");
+            window.location.href = "/register"; // Hits the new route in flow.py
+        } else {
+            alert(result.message); // Shows "Nenosiri si sahihi!"
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Server error. Hakikisha flow.py inafanya kazi.");
     }
+});
 </script>
 
 </body>

@@ -9,7 +9,15 @@ import requests
 app = FastAPI()
 # --- USER DATABASE (Temporary) ---
 # In a real app, you'd use a database like SQLite or PostgreSQL
-users_db = {} 
+# Update your users_db at the top of flow.py
+users_db = {
+    "0712345678": {
+        "password": "1234", 
+        "name": "Muslimu", 
+        "balance": 0.00,  # Starting units in kWh
+        "meter_ids": ["14205678112"]
+    }
+}
 from fastapi.responses import FileResponse
 
 @app.get("/")
@@ -27,10 +35,44 @@ async def get_dashboard():
     return FileResponse("index.html")
 
 # NEW ENDPOINT: Let the browser ask "who is logged in?"
+# Update Line 30-32 in flow.py
 @app.get("/api/user_data")
 async def provide_user_data():
-    return {"username": current_user["username"]}
+    phone = current_user["username"]
+    user_info = users_db.get(phone, {"balance": 0.00})
+    return {
+        "username": phone,
+        "balance": user_info.get("balance", 0.00)
+    }
 
+# This acts as your temporary database
+users_db = {
+    "0712345678": {"password": "1234", "name": "Mteja"}
+}
+
+@app.post("/login")
+async def login_check(data: dict):
+    username = data.get("username")
+    password = data.get("password")
+
+    # Check if the number exists in our "database"
+    if username in users_db:
+        if users_db[username]["password"] == password:
+            # Update the global current_user for the dashboard to see
+            global current_user
+            current_user["username"] = users_db[username]["name"]
+            return {"status": "success"}
+        else:
+            return {"status": "error", "message": "Nenosiri si sahihi!"}
+    else:
+        # If number is not found, the frontend will redirect to registration
+        return {"status": "not_found"}
+class UserLogin(BaseModel):
+    username: str
+    password: str
+@app.get("/register")
+async def get_register():
+    return FileResponse("register.html")
 # For the Payment page
 @app.get("/payment")
 async def get_payment():
@@ -74,36 +116,44 @@ async def get_history_data():
     return history_db
 @app.post("/register")
 async def register(user: UserRegister):
-    # (Your existing registration logic...)
-    users_db[user.username] = {"password": user.password, "meters": user.meter_ids}
-    # When they register (and effectively log in), we set the name
-    current_user["username"] = user.username 
-    return {"status": "success", "message": "Account created!"}
+    # 1. Check if user already exists
+    if user.username in users_db:
+        return {"status": "error", "message": "Namba hii tayari imesajiliwa!"}
+    
+    # 2. Add to your dictionary database
+    users_db[user.username] = {
+        "password": user.password,
+        "meter_ids": user.meter_ids if user.meter_ids else []
+    }
+    
+    # 3. Effectively log them in
+    current_user["username"] = user.username
+    
+    return {"status": "success", "message": "Account created successfully"}
 
 @app.post("/login")
-async def login(username: str = Form(...), password: str = Form(...)):
-    user = users_db.get(username)
-    if user and user["password"] == password:
-        return {"status": "success", "user": username}
-    return {"status": "error", "message": "Invalid login"}
+async def login(user: UserLogin):
+    # Check if user exists AND password matches
+    if user.username in users_db and users_db[user.username]["password"] == user.password:
+        return {"status": "success"}
+    else:
+        return {"status": "error", "message": "User not found"}
 @app.get("/logout")
 async def logout():
-    # This sends the user back to the login page
+    global current_user
+    current_user = {"username": None} # Clear the session
     return FileResponse("login.html")
 @app.post("/add_meter")
 async def add_meter(meter: NewMeter):
-    # Check if user exists in our dictionary
     if meter.username in users_db:
-        # Tanzanian meters are 11 digits
+        # Tanzanian meters are usually 11 digits
         if len(meter.meter_number) != 11:
-            return {"status": "error", "message": "Namba ya mita lazima iwe na namba 11"}
+            return {"status": "error", "message": "Namba ya mita lazima iwe na tarakimu 11"}
         
-        # Add to the landlord's list
-        users_db[meter.username]["meters"][meter.nickname] = meter.meter_number
-        print(f"Added {meter.nickname} to {meter.username}")
-        return {"status": "success", "message": "Mita imesajiliwa kikamilifu!"}
+        users_db[meter.username]["meter_ids"].append(meter.meter_number)
+        return {"status": "success", "message": "Mita imeongezwa!"}
     
-    return {"status": "error", "message": "User not found"}
+    return {"status": "error", "message": "Mtumiaji hajapatikana"}
 # --- UPDATED USER DATABASE LOGIC ---
 users_db = {
     "mofaza": {
@@ -183,7 +233,23 @@ async def initiate_payment(meter_number: str, amount: float, phone: str, provide
         return response.json()
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
+@app.post("/api/buy_units")
+async def buy_units(data: dict):
+    global current_user
+    phone = current_user.get("username")
+    amount = float(data.get("amount", 0))
+    
+    if phone in users_db:
+        # Conversion logic: 1 kWh = TSH 350 (Example rate)
+        new_units = round(amount / 350, 2)
+        users_db[phone]["balance"] += new_units
+        
+        return {
+            "status": "success", 
+            "new_balance": users_db[phone]["balance"],
+            "added": new_units
+        }
+    return {"status": "error", "message": "User not logged in"}
 @app.get("/manifest.json")
 async def get_manifest():
     paths = [

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <title>LUKU Connect - Malipo</title>
     <style>
         body {
@@ -60,38 +61,62 @@
     <input type="number" id="phoneNum" placeholder="Namba ya Simu (e.g. 07XXXXXXXX)">
     <button class="pay-btn" onclick="startPayment()">LIPA SASA</button>
 </div>
+<div class="glass-card" style="margin-top: 20px; padding: 20px;">
+    <h3>Nunua Umeme</h3>
+    <label style="font-size: 0.8rem; opacity: 0.8; display: block; margin-bottom: 5px;">KIASI (TSH)</label>
+    <input type="number" id="pay-amount" placeholder="Weka kiasi..." style="margin-bottom: 20px; width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.1); color: white;">
+    
+    <button class="glass-button" id="pay-btn" style="background: #2ecc71; width: 100%; border: none; padding: 15px; border-radius: 10px; color: white; font-weight: bold; cursor: pointer;">LIPA SASA</button>
+
+    <div id="token-display" style="display:none; margin-top: 20px; padding: 15px; background: rgba(46, 204, 113, 0.1); border: 2px dashed #2ecc71; border-radius: 10px; text-align: center;">
+        <p style="margin: 0; font-size: 0.8rem; color: #ccc;">TOKEN YAKO:</p>
+        <h2 id="generated-token" style="letter-spacing: 2px; color: #fff; margin: 10px 0;"></h2>
+        <small style="color: #2ecc71;">Ingiza namba hizi kwenye mita yako</small>
+    </div>
+</div>
 
 <script>
-    let selectedMethod = '';
+document.getElementById('pay-btn').addEventListener('click', async function() {
+    const amount = document.getElementById('pay-amount').value;
     
-    // Replace lines 68-72 in your photo with this:
-function selectMethod(method) {
-    selectedMethod = method;
-    console.log("Njia iliyochaguliwa: ", method);
-
-    // 1. Remove the yellow border from ALL methods first
-    document.querySelectorAll('.method-item').forEach(item => {
-        item.style.borderColor = 'transparent';
-        item.style.background = 'rgba(255,255,255,0.2)';
-    });
-
-    // 2. Add the highlight to the one the user just clicked
-    // This finds the specific box for M-Pesa, Tigo, or HaloPesa
-    const activeBox = event.currentTarget;
-    activeBox.style.borderColor = '#ffcc00'; // Electricity Yellow
-    activeBox.style.background = 'rgba(255,255,255,0.4)';
-}
-
-    async function startPayment() {
-        const phone = document.getElementById('phoneNum').value;
-        if(!selectedMethod || phone.length < 10) {
-            alert("Tafadhali chagua njia ya malipo na weka namba sahihi!");
-            return;
-        }
-        
-        alert("Ombi la malipo limetumwa! Tafadhali angalia simu yako kuweka PIN.");
-        // Here you would fetch your AzamPay or Stripe route in flow.py
+    // 1. Check if the amount is enough
+    if(amount < 1000) {
+        alert("Kiasi cha chini ni TSH 1,000");
+        return;
     }
+
+    // 2. Tell flow.py to add units to our balance
+    try {
+        const response = await fetch('/api/buy_units', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ amount: amount })
+        });
+        
+        const result = await response.json();
+        
+        if(result.status === "success") {
+            // 3. Generate the 20-digit LUKU token visually
+            const generateSegment = () => Math.floor(1000 + Math.random() * 9000);
+            const fullToken = `${generateSegment()} ${generateSegment()} ${generateSegment()} ${generateSegment()} ${generateSegment()}`;
+            
+            // 4. Show the success screen
+            document.getElementById('generated-token').innerText = fullToken;
+            document.getElementById('token-display').style.display = 'block';
+            
+            this.innerText = "MALIPO YAMEKAMILIKA";
+            this.style.background = "#95a5a6";
+            this.disabled = true;
+
+            alert(`Hongera! Umenunua ${result.added} kWh. Salio jipya: ${result.new_balance} kWh`);
+        } else {
+            alert("Hitilafu: " + result.message);
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Server haipatikani. Hakikisha flow.py inafanya kazi!");
+    }
+});
 </script>
 
 </body>
