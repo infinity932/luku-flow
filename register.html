@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUKU Connect - Jisajili</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+        }
+        .auth-container {
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            box-sizing: border-box;
+        }
+        .btn-reg {
+            width: 100%;
+            padding: 15px;
+            background: #ffcc00;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-container">
+    <h2>Tengeneza Akaunti</h2>
+    <p>Jisajili kuanza kutumia LUKU Connect</p>
+    
+    <input type="text" id="reg-name" placeholder="Jina Kamili">
+    <input type="text" id="reg-phone" placeholder="Namba ya Simu (Mfano: 07...)">
+    <input type="number" id="reg-meter" placeholder="Namba ya Mita">
+    <input type="password" id="reg-pass" placeholder="Nenosiri (Password)">
+    
+    <button class="btn-reg" onclick="handleRegister()">JISAJILI SASA</button>
+    
+    <p style="margin-top: 20px; font-size: 0.9rem;">
+        Tayari una akaunti? <a href="/" style="color: #ffcc00; text-decoration: none;">Ingia hapa</a>
+    </p>
+</div>
+
+<script>
+async function handleRegister() {
+    const name = document.getElementById('reg-name').value;
+    const phone = document.getElementById('reg-phone').value;
+    const meter = document.getElementById('reg-meter').value;
+    const pass = document.getElementById('reg-pass').value;
+
+    if (!name || !phone || !meter || !pass) {
+        alert("Tafadhali jaza nafasi zote!");
+        return;
+    }
+
+    try {
+        const response = await fetch('/register', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                name: name,
+                username: phone,
+                meter: meter,
+                password: pass
+            })
+        });
+
+        const result = await response.json();
+        if (result.status === "success") {
+            alert("Usajili umekamilika! Karibu " + name);
+            window.location.href = "/dashboard";
+        } else {
+            alert(result.message);
+        }
+    } catch (e) {
+        alert("Imeshindwa kuunganisha na server.");
+    }
+}
+</script>
+
+</body>
+</html>
