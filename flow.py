@@ -116,19 +116,18 @@ async def get_history_data():
     return history_db
 @app.post("/register")
 async def register(user: UserRegister):
-    # 1. Check if user already exists
     if user.username in users_db:
         return {"status": "error", "message": "Namba hii tayari imesajiliwa!"}
     
-    # 2. Add to your dictionary database
+    # This must match your users_db structure at line 13
     users_db[user.username] = {
         "password": user.password,
+        "name": "Mteja Mpya", 
+        "balance": 0.00,  # Starts at 0 kWh
         "meter_ids": user.meter_ids if user.meter_ids else []
     }
     
-    # 3. Effectively log them in
     current_user["username"] = user.username
-    
     return {"status": "success", "message": "Account created successfully"}
 
 @app.post("/login")

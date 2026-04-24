@@ -170,7 +170,7 @@ input::placeholder {
         <input type="number" placeholder="Min 1,000">
     </div>
 
-    <button class="glass-button" style="margin-top: 30px;" onclick="window.location.href='payment.html'">
+    <button class="glass-button" style="margin-top: 30px;" onclick="processPurchase()">
     Nunua Kifurushi
 </button>
 </div>
@@ -336,6 +336,34 @@ async function updateDashboard() {
 // Check every 30 seconds automatically
 setInterval(updateDashboard, 30000);
 window.onload = updateDashboard;
+</script>
+<script>
+async function processPurchase() {
+    // Get the amount from your input box
+    const amountInput = document.querySelector('input[placeholder="Min 1,000"]').value;
+
+    try {
+        const response = await fetch('/api/buy_units', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ 
+                amount: amountInput // This MUST match float(data.get("amount")) in flow.py
+            })
+        });
+
+        const result = await response.json();
+
+        if (result.status === "success") {
+            alert(`Malipo yamekamilika! Umeongezewa ${result.added} kWh.`);
+            updateDashboard(); // Refreshes the 0 kWh to the new balance
+        } else {
+            // This shows "User not logged in" if phone isn't in users_db
+            alert("Error: " + result.message);
+        }
+    } catch (error) {
+        alert("Imeshindwa kuunganisha na server.");
+    }
+}
 </script>
 </body>
 </html>
