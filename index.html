@@ -355,7 +355,20 @@ async function processPurchase() {
 
         if (result.status === "success") {
             alert(`Malipo yamekamilika! Umeongezewa ${result.added} kWh.`);
-            updateDashboard(); // Refreshes the 0 kWh to the new balance
+            updateDashboard();
+            if (result.status === "success") {
+    // 1. Show the success message
+    alert(`Malipo yamekamilika! Umeongezewa ${result.added} kWh.`);
+    
+    // 2. Update the dashboard balance
+    updateDashboard(); 
+
+    // 3. Update the greeting name (Inside the function brackets)
+    document.querySelector('.welcome-text').innerText = `Habari, ${result.name || 'Mteja'} 👋`;
+
+    // 4. Clear the amount input box so it is empty for the next time
+    document.querySelector('input[placeholder="Min 1,000"]').value = ""; 
+} // Refreshes the 0 kWh to the new balance
         } else {
             // This shows "User not logged in" if phone isn't in users_db
             alert("Error: " + result.message);
