@@ -134,9 +134,11 @@ async def register(user: UserRegister):
 async def login(user: UserLogin):
     # Check if user exists AND password matches
     if user.username in users_db and users_db[user.username]["password"] == user.password:
+        # CRITICAL: Save the phone number to the session!
+        current_user["username"] = user.username 
         return {"status": "success"}
     else:
-        return {"status": "error", "message": "User not found"}
+        return {"status": "error", "message": "User not found or wrong password"}
 @app.get("/logout")
 async def logout():
     global current_user
