@@ -148,32 +148,80 @@ input::placeholder {
     70% { box-shadow: 0 0 0 15px rgba(255, 75, 43, 0); }
     100% { box-shadow: 0 0 0 0 rgba(255, 75, 43, 0); }
 }
+/* Responsive Layout */
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+                url('your-background.jpg') no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.dashboard-container {
+    width: 90%;
+    max-width: 400px; /* Keeps it looking like the computer version but fits mobile */
+    text-align: center;
+    padding: 20px;
+}
+
+.welcome-text {
+    color: white;
+    font-size: 2rem;
+    margin-bottom: 25px;
+    text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+/* Ensure inputs take full width of the card */
+input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(0,0,0,0.2);
+    color: white;
+}
 </style>
 </head>
 <body>
-    <div class="header-greeting" style="margin-top: 40px; font-size: 1.2rem;">
-    <span id="user-greeting">Habari, Mteja 👋</span>
-</div>
+    <div class="dashboard-container">
+        <h2 class="welcome-text">Habari, Mteja 👋</h2>
 
-<div class="glass-card">
-    <h3 style="opacity: 0.8; letter-spacing: 1px;">LUKU BALANCE</h3>
-    <div class="unit-balance">0.00 <span style="font-size: 1.2rem;">kWh</span></div>
-    <p style="font-size: 0.9rem; opacity: 0.7;">● Meter Active: 1420...</p>
+        <div class="glass-card">
+            <h3 style="opacity: 0.8; letter-spacing: 1px;">LUKU BALANCE</h3>
+            <div class="unit-balance">
+                0.00 <span style="font-size: 1.2rem;">kWh</span>
+            </div>
+            <p style="font-size: 0.9rem; opacity: 0.7;">● Meter Active: 1420...</p>
 
-    <div style="margin-top: 40px;">
-        <label style="display: block; text-align: left; font-size: 0.8rem;">METER NUMBER</label>
-        <input type="number" placeholder="1420 5678 112">
+            <div class="input-group">
+                <label>METER NUMBER</label>
+                <input type="number" placeholder="1420 5678 112" value="14205678112">
+            </div>
+
+            <div class="input-group">
+                <label>AMOUNT (TSH)</label>
+                <input type="number" placeholder="Min 1,000">
+            </div>
+
+            <button class="glass-button" onclick="processPurchase()">Nunua Kifurushi</button>
+        </div>
     </div>
-
-    <div style="margin-top: 20px;">
-        <label style="display: block; text-align: left; font-size: 0.8rem;">AMOUNT (TSH)</label>
-        <input type="number" placeholder="Min 1,000">
-    </div>
-
-    <button class="glass-button" style="margin-top: 30px;" onclick="processPurchase()">
-    Nunua Kifurushi
-</button>
-</div>
     <div style="position:fixed; bottom:0; width:100%; height:70px; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid rgba(255,255,255,0.1);">
     
     <div class="nav-item" onclick="window.location.href='index.html'" style="text-align:center; color: #00d2ff; cursor: pointer;">
@@ -309,7 +357,7 @@ async function updateDashboard() {
     try {
         const response = await fetch('/api/user_data');
         const data = await response.json();
-        
+        document.getElementById('user-greeting').innerText = `Habari, ${data.name || 'Mteja'} 👋`;
         const balanceElement = document.querySelector('.unit-balance');
         const balanceCard = balanceElement.closest('.glass-card'); // Finds the card container
 
