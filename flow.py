@@ -107,7 +107,7 @@ from fastapi.responses import FileResponse
 
 # THIS IS THE "FRONT DOOR"
 # It now points directly to your login page
-@app.get("/")
+@app.get("/login.html")
 async def get_login():
     return FileResponse("login.html")
 
