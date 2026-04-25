@@ -161,12 +161,13 @@ body {
     background-size: cover;
     font-family: 'Segoe UI', sans-serif;
 }
-
 .dashboard-container {
-    width: 90%;
-    max-width: 400px; /* Keeps it looking like the computer version but fits mobile */
-    text-align: center;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     padding: 20px;
+    box-sizing: border-box;
 }
 
 .welcome-text {
@@ -260,10 +261,10 @@ min-height: 100vh;
         <span style="font-size: 11px;">Usage</span>
     </div>
 
-    <div class="nav-item" onclick="window.location.href='profile.html'" style="text-align:center; color: rgba(255,255,255,0.6); cursor: pointer;">
-        <i class="fas fa-user" style="font-size: 20px;"></i><br>
-        <span style="font-size: 11px;">Account</span>
-    </div>
+    <div class="nav-item" onclick="window.location.href='404.html'" style="text-align:center;">
+    <i class="fas fa-user" style="font-size: 20px;"></i><br>
+    <span style="font-size: 11px;">Account</span>
+</div>
 
 </div>
     

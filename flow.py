@@ -79,9 +79,13 @@ async def get_payment():
     return FileResponse("payment.html")
 
 # For the History page
-@app.get("/history")
+@app.get("/history.html")
 async def get_history():
     return FileResponse("history.html")
+
+@app.get("/404.html")
+async def get_404():
+    return FileResponse("404.html")
 class UserRegister(BaseModel):
     username: str
     password: str
