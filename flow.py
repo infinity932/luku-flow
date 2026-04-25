@@ -78,7 +78,12 @@ async def get_register():
 async def get_payment():
     return FileResponse("payment.html")
 
-# For the History page
+# Route for the Home page
+@app.get("/index.html")
+async def get_index():
+    return FileResponse("index.html")
+
+# Keep your existing routes for history and 404
 @app.get("/history.html")
 async def get_history():
     return FileResponse("history.html")
@@ -118,6 +123,27 @@ async def get_history():
 @app.get("/api/history")
 async def get_history_data():
     return history_db
+@app.get("/api/get_history")
+async def get_history():
+    # In a real app, you would fetch this from your database
+    # For now, here is a dynamic list that looks like your screenshot:
+    history_data = {
+        "purchases": [
+            {
+                "date": "2026-04-25", 
+                "meter_nickname": "Sitting Room", 
+                "amount": "10,000", 
+                "token": "1234-5678-9012-3456-7890"
+            },
+            {
+                "date": "2026-04-24", 
+                "meter_nickname": "Kitchen", 
+                "amount": "5,000", 
+                "token": "9876-5432-1098-7654-3210"
+            }
+        ]
+    }
+    return history_data
 @app.post("/register")
 async def register(user: UserRegister):
     if user.username in users_db:

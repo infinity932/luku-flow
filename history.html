@@ -11,7 +11,11 @@
             font-family: 'Segoe UI', sans-serif;
             color: white; margin: 0; padding: 20px;
         }
-        .container { max-width: 800px; margin: auto; }
+        .container { 
+    max-width: 800px; 
+    margin: auto; 
+    padding-bottom: 80px; /* This prevents the bottom nav from hiding your cards */
+}
         h2 { border-bottom: 2px solid #ffcc00; padding-bottom: 10px; }
         
         table {
@@ -29,7 +33,7 @@
 <body>
 
 <div class="container">
-    <div class="back-btn" onclick="window.location.href='/dashboard'">← Rudi Dashboard</div>
+    <div class="back-btn" onclick="window.location.href='index.html'">← Rudi Dashboard</div>
     <h2>Historia ya Ununuzi (Purchase History)</h2>
 
     <table>
@@ -41,14 +45,7 @@
                 <th>Token Number</th>
             </tr>
         </thead>
-        <tbody id="historyTable">
-            <tr>
-                <td>2026-04-12</td>
-                <td>Sitting Room</td>
-                <td>10,000</td>
-                <td class="token-cell">1234-5678-9012-3456-7890</td>
-            </tr>
-        </tbody>
+        <tbody id="historyTable"></tbody>
     </table>
 </div>
 <div class="glass-card" style="margin-top: 20px; padding: 20px;">
@@ -63,4 +60,32 @@
     </div>
 </div>
 </body>
+<script>
+async function loadHistory() {
+    try {
+        const response = await fetch('/api/get_history');
+        const data = await response.json();
+        const tableBody = document.getElementById('historyTable');
+        
+        tableBody.innerHTML = ''; // Clears old data
+
+        data.purchases.forEach(item => {
+            const row = `
+                <tr>
+                    <td>${item.date}</td>
+                    <td>${item.meter_nickname}</td>
+                    <td>${item.amount}</td>
+                    <td class="token-cell" style="color: #00ff88; font-family: monospace;">${item.token}</td>
+                </tr>
+            `;
+            tableBody.innerHTML += row;
+        });
+    } catch (e) {
+        console.log("Error loading history:", e);
+    }
+}
+
+// Start loading when the page opens
+window.onload = loadHistory;
+</script>
 </html>
