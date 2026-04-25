@@ -88,9 +88,9 @@ async def get_index():
 async def get_history():
     return FileResponse("history.html")
 
-@app.get("/404.html")
-async def get_404():
-    return FileResponse("404.html")
+@app.get("/account.html")
+async def get_account():
+    return FileResponse("account.html")
 class UserRegister(BaseModel):
     username: str
     password: str

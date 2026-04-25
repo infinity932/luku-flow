@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUKU Connect - Akaunti</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), 
+                        url('https://images.unsplash.com/photo-1473341304170-971dccb5ac1e');
+            background-size: cover;
+            background-attachment: fixed;
+            color: white;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            margin-top: 20px;
+        }
+
+        .profile-pic {
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #00d2ff;
+        }
+
+        .nav-item { text-align: center; cursor: pointer; }
+        .nav-item i { font-size: 20px; color: white; opacity: 0.6; }
+        .nav-item span { font-size: 11px; opacity: 0.6; }
+        .active i, .active span { color: #00d2ff; opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <div class="glass-card" style="text-align: center;">
+        <div class="profile-pic">
+            <i class="fas fa-user" style="font-size: 40px; color: #00d2ff;"></i>
+        </div>
+        <h2 style="margin: 0;">Habari, Mteja 🖐️</h2>
+        <p style="opacity: 0.7; font-size: 0.9rem;">+255 712 345 678</p>
+    </div>
+
+    <div class="glass-card">
+        <h3 style="color: #00d2ff; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">Mipangilio</h3>
+        <p><i class="fas fa-bolt" style="margin-right: 10px;"></i> Mita Zilizohifadhiwa</p>
+        <p><i class="fas fa-wallet" style="margin-right: 10px;"></i> Namba ya Malipo (AzamPay)</p>
+        <p><i class="fas fa-question-circle" style="margin-right: 10px;"></i> Msaada</p>
+        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
+        <p style="color: #ff4d4d; cursor: pointer;" onclick="window.location.href='login.html'">
+            <i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i> Ondoka (Logout)
+        </p>
+    </div>
+
+    <div style="position:fixed; bottom:0; width:100%; height:70px; background: rgba(0,0,0,0.9); display: flex; justify-content: space-around; align-items: center; border-top: 1px solid rgba(255,255,255,0.1);">
+        <div class="nav-item" onclick="window.location.href='index.html'">
+            <i class="fas fa-home"></i><br><span>Home</span>
+        </div>
+        <div class="nav-item" onclick="window.location.href='history.html'">
+            <i class="fas fa-bolt"></i><br><span>Usage</span>
+        </div>
+        <div class="nav-item active">
+            <i class="fas fa-user"></i><br><span>Account</span>
+        </div>
+    </div>
+
+</body>
+</html>
